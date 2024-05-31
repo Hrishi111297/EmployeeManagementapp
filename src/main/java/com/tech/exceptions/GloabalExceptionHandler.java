@@ -3,6 +3,7 @@ package com.tech.exceptions;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -44,6 +45,15 @@ public class GloabalExceptionHandler {
 		        return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.BAD_REQUEST);
 		    }
 		    
-
-
+		 @ExceptionHandler(DataIntegrityViolationException.class)
+		    public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+		        if (ex.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
+		            org.hibernate.exception.ConstraintViolationException constraintViolationException =
+		                    (org.hibernate.exception.ConstraintViolationException) ex.getCause();
+		            if (constraintViolationException.getSQLException().getSQLState().equals("23000")) {
+		                return new ResponseEntity<>("Duplicate entry ", HttpStatus.CONFLICT);
+		            }
+		        }
+		        return new ResponseEntity<>("Data integrity violation: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
+		    }
 }

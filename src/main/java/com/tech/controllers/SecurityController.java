@@ -1,5 +1,6 @@
 package com.tech.controllers;
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tech.exceptions.ResourceNotFound;
+import com.tech.payloads.EmployeeDto;
+import com.tech.repository.EmployeeRepo;
 import com.tech.security.JwtHelper;
 import com.tech.security.JwtRequest;
 import com.tech.security.JwtResponse;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
@@ -33,11 +39,16 @@ public class SecurityController {
     @Autowired
     private JwtHelper helper;
 
+    @Autowired
+    EmployeeRepo employeeRepo;
+    @Autowired
+    ModelMapper modelMapper;
+
     private Logger logger = LoggerFactory.getLogger(SecurityController.class);
 
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request) {
+    public ResponseEntity<JwtResponse> login(@Valid @RequestBody JwtRequest request) {
 
         this.doAuthenticate(request.getUsername(), request.getPassword());
 System.out.println(request.getUsername()+"&"+request.getPassword());
@@ -47,7 +58,7 @@ System.out.println(request.getUsername()+"&"+request.getPassword());
 
         JwtResponse response = JwtResponse.builder()
                 .token(token)
-                .username(userDetails.getUsername()).build();
+                .username(userDetails.getUsername()).employeeData(modelMapper.map(userDetails, EmployeeDto.class)).build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

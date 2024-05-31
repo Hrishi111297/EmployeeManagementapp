@@ -1,5 +1,7 @@
 package com.tech.security;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +14,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class JwtRequest {
-private String username;
-private String password;
+	@NotEmpty
+	@NotNull
+	private String username;
+	@NotEmpty
+	@NotNull
+	private String password;
 
 }

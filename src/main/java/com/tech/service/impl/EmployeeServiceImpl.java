@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.tech.entities.Employee;
@@ -20,7 +21,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	ModelMapper modelMapper;
 
 	@Override
-	public EmployeeDto addEmployee(EmployeeDto e) {
+	public EmployeeDto addEmployee(EmployeeDto e) throws DataIntegrityViolationException {
 		Employee emp = this.modelMapper.map(e, Employee.class);
 		return this.modelMapper.map(this.employeeRepo.save(emp), EmployeeDto.class);
 	}
