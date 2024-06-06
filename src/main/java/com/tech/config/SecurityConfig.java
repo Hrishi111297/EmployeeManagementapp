@@ -25,7 +25,7 @@ public class SecurityConfig {
 			"/v2/api-docs",
 			"/swagger-resources/**",
 			"/swagger-ui/**",
-			"/webjars/**","/auth/login","/emp/addEmp","try/genpdf"};
+			"/webjars/**","/auth/login","/emp/addEmp","try/genpdf","/auth/status"};
     @Autowired
     private EntryPoint point;
     @Autowired
