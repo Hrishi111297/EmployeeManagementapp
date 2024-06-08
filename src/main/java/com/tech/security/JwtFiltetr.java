@@ -1,5 +1,7 @@
 package com.tech.security;
 
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,16 +35,10 @@ public class JwtFiltetr  extends OncePerRequestFilter{
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, java.io.IOException {
 
-//        try {
-//            Thread.sleep(500);
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
-        //Authorization
+//Authorization
 
         String requestHeader = request.getHeader("Authorization");
-        //Bearer 2352345235sdfrsfgsdfsdf
-        System.out.println(requestHeader);
+        //Bearer 2352345235sdfrsfgsdfsdf 
         logger.info(" Header :  {}", requestHeader);
         String username = null;
         String token = null;
@@ -59,6 +55,7 @@ public class JwtFiltetr  extends OncePerRequestFilter{
             } catch (ExpiredJwtException e) {
                 logger.info("Given jwt token is expired !!");
                 e.printStackTrace();
+                response.setHeader("Authorization",null);
             } catch (MalformedJwtException e) {
                 logger.info("Some changed has done in token !! Invalid Token");
                 e.printStackTrace();
@@ -81,7 +78,14 @@ public class JwtFiltetr  extends OncePerRequestFilter{
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
             Boolean validateToken = this.jwtHelper.validateToken(token, userDetails);
             if (validateToken) {
-
+            	
+                    // If token is about to expire, refresh it
+                    Date expirationDate = jwtHelper.getExpirationDateFromToken(token);
+                    if (expirationDate.before(new Date(System.currentTimeMillis() + 1000 * 60 *1))) { // 30 minutes before expiry
+                        token = jwtHelper.refreshToken(token);
+                        response.setHeader("Authorization",token);
+                        logger.info("Authorization header: " + response.getHeader("Authorization"));
+                    }
                 //set the authentication
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

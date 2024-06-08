@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.tech.payloads.ApiResponse;
 
+import io.jsonwebtoken.ExpiredJwtException;
+
 @RestControllerAdvice
 public class GloabalExceptionHandler {
 	@ExceptionHandler(ResourceNotFound.class)
@@ -56,4 +58,9 @@ public class GloabalExceptionHandler {
 		        }
 		        return new ResponseEntity<>("Data integrity violation: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
 		    }
+		 @ExceptionHandler(ExpiredJwtException.class)
+	        public ResponseEntity<ApiResponse> handleExpiredJwtException(ExpiredJwtException ex) {
+	  	        	ApiResponse apiResponse = new ApiResponse( "Token expired. Please login again.: " + ex.getMessage(), false);
+		        return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.UNAUTHORIZED);
+	        }
 }

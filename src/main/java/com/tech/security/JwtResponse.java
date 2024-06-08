@@ -15,7 +15,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class JwtResponse {
 private String token;
-private String username;
-private EmployeeDto employeeData;
+//we are sending only token to frontend
+//private String username;
+//private EmployeeDto employeeData;
 
 }

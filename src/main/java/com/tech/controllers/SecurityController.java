@@ -64,10 +64,13 @@ public class SecurityController {
         cookie.setPath("/"); // Set the cookie path to root ("/") so it's accessible from all paths
         response.addCookie(cookie);
 
+//        JwtResponse jwtResponse = JwtResponse.builder()
+//                .token(token)
+//                .username(userDetails.getUsername())
+//                .employeeData(modelMapper.map(userDetails, EmployeeDto.class))
+//                .build();
         JwtResponse jwtResponse = JwtResponse.builder()
                 .token(token)
-                .username(userDetails.getUsername())
-                .employeeData(modelMapper.map(userDetails, EmployeeDto.class))
                 .build();
 
         return new ResponseEntity<>(jwtResponse, HttpStatus.OK);
@@ -87,8 +90,9 @@ public class SecurityController {
     }
     @GetMapping("/status")
     public ResponseEntity<String> getStatus() {
-        // You can add more complex logic here to determine the status
-        return new ResponseEntity<>("Server is running", HttpStatus.OK);
+    	 logger.info("Server is running");
+             return new ResponseEntity<>("Server is running", HttpStatus.OK);
+            
     }
 
    

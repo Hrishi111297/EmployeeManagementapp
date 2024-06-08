@@ -15,8 +15,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JwtHelper {
 
-    //requirement :
-    public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
+    //requirement : 5hours
+    public static final long JWT_TOKEN_VALIDITY = 1* 60 ;
 
     //    public static final long JWT_TOKEN_VALIDITY =  60;
     private String secret = "afafasfafafasfasfasfafacasdasfasxASFACASDFACASDFASFASFDAFASFASDAADSCSDFADCVSGCFVADXCcadwavfsfarvf";
@@ -61,7 +61,7 @@ public class JwtHelper {
     private String doGenerateToken(Map<String, Object> claims, String subject) {
 
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000L))
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 
@@ -69,6 +69,16 @@ public class JwtHelper {
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+    public String refreshToken(String token) {
+        final Claims claims = getAllClaimsFromToken(token);
+        claims.setIssuedAt(new Date());
+        claims.setExpiration(new Date(System.currentTimeMillis() + 1*60*1000L)); // 2 minutes from current time
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .signWith(SignatureAlgorithm.HS512, secret)
+                .compact();
     }
 
 
